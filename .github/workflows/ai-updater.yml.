@@ -1,0 +1,33 @@
+name: AI Website Updater
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  update-website:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Run Claude Code Agent
+        uses: anthropics/claude-code-action@v1
+        with:
+          prompt: |
+            You are the webmaster for this Toastmasters club website.
+            An issue was opened with the following request:
+            
+            Title: ${{ github.event.issue.title }}
+            Description: ${{ github.event.issue.body }}
+            
+            1. Update `index.html` according to the requested changes.
+            2. Ensure you follow all branding guidelines in `CLAUDE.md`.
+            3. Commit the changes directly to the main branch with a clear commit message.
+            4. Reply to the issue confirming that the update is live.
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
